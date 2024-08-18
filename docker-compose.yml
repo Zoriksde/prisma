@@ -1,0 +1,18 @@
+version: '3.9'
+name: prisma-recruitment
+
+services:
+  postgres:
+    container_name: postgres_prisma
+    image: postgres:14-alpine
+    restart: on-failure
+    env_file:
+      - ./tools/docker/.postgres.env
+    ports:
+      - '5432:5432'
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data'
+
+volumes:
+  postgres_data:
+    driver: local
