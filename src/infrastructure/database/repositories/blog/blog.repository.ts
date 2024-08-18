@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 import { IBlogRepository } from '../../../../application/common/interfaces/blog/IBlogRepository';
-import { Blog as InfrastructureBlogConfiguration } from '../../configuration/Blog';
-import { Post as InfrastructurePostConfiguration } from '../../configuration/Post';
+import { Blog as PostgresBlogEntity } from '../../entities/Blog';
+import { Post as PostgresPostEntity } from '../../entities/Post';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { Blog } from '../../../../domain/aggregates/blog//Blog';
@@ -10,19 +10,19 @@ import { Post } from '../../../../domain/aggregates/blog/entities/Post';
 @Injectable()
 export class PostgresBlogRepository implements IBlogRepository {
   constructor(
-    @InjectRepository(InfrastructureBlogConfiguration)
-    private readonly blogEntityRepository: Repository<InfrastructureBlogConfiguration>,
+    @InjectRepository(PostgresBlogEntity)
+    private readonly blogEntityRepository: Repository<PostgresBlogEntity>,
   ) {}
 
-  private mapToEntity(blog: Blog): InfrastructureBlogConfiguration {
-    const blogEntity = new InfrastructureBlogConfiguration();
+  private mapToEntity(blog: Blog): PostgresBlogEntity {
+    const blogEntity = new PostgresBlogEntity();
 
     blogEntity.id = blog.getId();
     blogEntity.name = blog.getName();
     blogEntity.slug = blog.getSlug();
 
     blogEntity.posts = (blog.getPosts() || []).map((post) => {
-      const postEntity = new InfrastructurePostConfiguration();
+      const postEntity = new PostgresPostEntity();
 
       postEntity.id = post.getId();
       postEntity.title = post.getTitle();
@@ -35,22 +35,20 @@ export class PostgresBlogRepository implements IBlogRepository {
     return blogEntity;
   }
 
-  private mapToDomain(
-    blogConfiguration: InfrastructureBlogConfiguration,
-  ): Blog {
-    const posts = (blogConfiguration.posts || []).map((postConfiguration) => {
+  private mapToDomain(blogEntity: PostgresBlogEntity): Blog {
+    const posts = (blogEntity.posts || []).map((postEntity) => {
       return Post.createPost(
-        postConfiguration.id,
-        postConfiguration.content,
-        postConfiguration.viewCount,
-        postConfiguration.title,
+        postEntity.id,
+        postEntity.content,
+        postEntity.viewCount,
+        postEntity.title,
       );
     });
 
     return Blog.createBlog(
-      blogConfiguration.id,
-      blogConfiguration.name,
-      blogConfiguration.slug,
+      blogEntity.id,
+      blogEntity.name,
+      blogEntity.slug,
       posts,
     );
   }

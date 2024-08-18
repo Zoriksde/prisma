@@ -5,8 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlogRepositoryToken } from '../application/common/interfaces/blog/IBlogRepository';
 import { PostgresBlogRepository } from '../infrastructure/database/repositories/blog/blog.repository';
 import { BlogService } from '../application/services/blog/blog.service';
-import { Blog } from '../infrastructure/database/configuration/Blog';
-import { Post } from '../infrastructure/database/configuration/Post';
+import { Blog } from '../infrastructure/database/entities/Blog';
+import { Post } from '../infrastructure/database/entities/Post';
 
 @Module({
   imports: [

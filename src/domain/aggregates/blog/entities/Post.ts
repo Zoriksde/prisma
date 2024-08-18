@@ -9,7 +9,7 @@ export class Post {
     viewCount: number,
     title?: string,
   ) {
-    return new Post(id, content, viewCount, title);
+    return new Post(id, content, viewCount, title ? title : undefined);
   }
 
   private constructor(
