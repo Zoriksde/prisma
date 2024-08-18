@@ -1,6 +1,13 @@
 import { uuid } from 'uuidv4';
 import { Post } from './entities/Post';
 
+/**
+ * Such entities doesn't have to be data centric only, it can encapsulate the behaviour of its entity.
+ * The responsibility of mutating the state or interacting with certain properties, should be done in domain layer
+ * instead of application one. Such encapsulation would be in one place, which definitely reduces the need of writing
+ * specific logic couple of times.
+ */
+
 export class Blog {
   private readonly id: string;
 

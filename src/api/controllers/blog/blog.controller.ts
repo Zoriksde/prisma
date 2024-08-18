@@ -6,6 +6,15 @@ import { GetBlogResponse } from '../../contracts/blog/getBlogResponse';
 import { CreatePostRequest } from '../../contracts/blog/createPostRequest';
 import { CreatePostResponse } from '../../contracts/blog/createPostResponse';
 
+/**
+ * Due to the fact that post entity is strictly related to blog entity (blog entity is kind of an aggregate entity
+ * which contains multiple post entities), I've decided to put all post related actions into blog controller, as they
+ * should be executed only within specific blog aggregate context.
+ *
+ * NOTE: It can be the use case to retrieve all of the posts from the database, without having to specify the blog entity
+ * context. It's fine, as long as we want to have only read access to them. We can create separate repository which would
+ * handle such cases without introducing blog entity context.
+ */
 @Controller('blogs')
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}

@@ -10,8 +10,19 @@ import { CreateBlogData } from '../../../application/common/contracts/createBlog
 import { Post } from '../../../domain/aggregates/blog/entities/Post';
 import { CreatePostData } from '../../../application/common/contracts/createPostData';
 
+/**
+ * We're handling exception in the application layer, as they shouldn't be determined by infrastructure. Violating
+ * the assumption, would made us rewritting the error handling logic at each time, when the infrastructure layer would
+ * change.
+ *
+ * NOTE: This error handling is very basic, it should definitely be improved (providing more error details, logging
+ * the errors, using observability tools to monitor or providing filters for different kind of exceptions).
+ */
 @Injectable()
 export class BlogService {
+  /**
+   * Dynamic injection of specific IBlogRepository, which makes application layer unaware of the used database.
+   */
   constructor(
     @InjectBlogRepository() private readonly blogRepository: IBlogRepository,
   ) {}
