@@ -18,83 +18,73 @@ Once the container run successfully, use `npm run start:dev` to run the applicat
 
 I have chosen the following technology stack due to couple of reasons.
 
-NestJS is a framework in the NodeJS environment. Such enviroment provides a lot of packages and external libraries, it's one of the most popular runtime environments which is constantly maintainble. The popularity makes it
-highly reliable, as people take care of the libraries, fix the bugs and issues. Also some common problems are already solved in some libraries or external packages, which reduces the overall development effort.
+NestJS is a framework in the NodeJS environment. Such environment provides a lot of packages and external libraries, it's one of the most popular runtime environments which is constantly maintainble. Its popularity makes it highly reliable, as people take care of the libraries, fix the bugs and issues. Also some common problems are already solved in some libraries or external packages, which reduces the overall development effort.
 
 NestJS is built on top of ExpressJS and NodeJS. This makes such framework great for writing scalable applications,
 the overall NodeJS architecture allows for non-blocking I/O operations, and it can effectively manage huge workload.
 
-NestJS imposes certain good coding practices, while it's not always possible to do something on your own (due to NestJS limitations), it provides a great boilerplate for writing good quality code. It encapsulates some commonly used
-design patterns and principles, which makes coding much simpler.
+NestJS imposes certain good coding practices, while it's not always possible to do something on your own (due to NestJS limitations), it provides a great boilerplate for writing good quality code. It encapsulates some commonly used design patterns and principles, which makes coding much simpler and it results in more maintainable code.
 
-NestJS works great with TypeScript, which forces us to write type safe code.
+NestJS works great with TypeScript, which imposes type safe coding.
 
-I'm familar with such technologies :D
+And finally I'm familar with such technologies :D
 
 ### What were some of the trade-offs you made when building this application? Why were these acceptable trade-offs?
 
 Some of the trade-offs I was thiniking about:
 
 Simplicity vs Flexibility:
-Certain solutions are definitely simpler, but we're paying the cost of less flexibility. For example using TypeORM
-may speed up our development process, but it can limit flexibility of the application. For most of the use cases
-TypeORM definitely fulfills the requirements, however in some specific cases it does not work
-so well. However due to nature of this application, I didn't want to overengineer the software, thus I used TypeORM for
-this application (as it fulfills requirements).
+Certain solutions are definitely simpler, but we're paying the cost of less flexibility. For example using TypeORM may speed up our development process, but it can limit flexibility of the application. For most of the use cases TypeORM fulfills the requirements, however in some specific cases it does not work so well. However due to nature of this application, I didn't want to perform software overengineering, thus I used TypeORM for this application, as it fulfills given requirements, and there's no need for additional flexibility in this area. 
 
 Maintainability vs Complexity:
-Highly maintainable code is easier to understand, but often it requires more complex patterns or concepts
-to implement. The overall boilerplate is initially slightly more complex in case of writing highly maintainable code. I was thinking about standard 3-layered application and clean architecture, and decided to implement it within clean architecture principles, to improve the code maintainability (I know it's a basic application, but thinking about different problems in the future - e.g changing the database etc. made me use clean architecture principles)
+Highly maintainable code is easier to understand, but often it requires more complex patterns or concepts to use. In case of writing highly maintainable code the overall boilerplate is more complex. I was thinking about standard 3-layered application and clean architecture, and decided to implement it using clean architecture principles. This way I'm improving the code maintainability (I know it's a basic application, but thinking about different problems in the future - e.g changing the database etc. made me use clean architecture principles), with some acceptable complexity overage.
 
-Data Integrity vs Simplicity:
-Working with data often requires understanding the domain and business context. I was thinking about creating
-a basic data models (single data model for whole application) and more sophisticated solution (using transactional boundaries, unit of work, mapping functions between database and domain layers etc.). Introducing more complex patterns to work with data can result in spending more time during development process, but I've decided to focus on some data integrity patterns to provide more consistent data.
+DDD Modeling vs Standard Models
+I was thinking about different approaches to model the business layer. Comparing the standard models (single class per each entity without sophisticated logic for mapping, data-centric classes with behavior declared in outer layers) to domain models (couple of classes per each entity, which potentially differs between layers, mapping layer between raw database entity and domain model, behavior-centric classes with its behavior defined).
+Although the standard approach is much simpler and does not require additional mapping layers and reduces the development effort, I've decided to model the business logic with DDD approach. This way I'm implicitly fulfilling the potential business requirements (e.g making sure that post is an entity in blog aggregate only - there shouldn't be a post without any blog linked). Although DDD imposes more development effort and defines rules to follow, it helps to model the business logic more precisely. I do realize that application is small enough, that these changes probably won't matter, but as all applications start with some basic logic and then they grow to huge sizes, sometimes it's worth to spend more time on it.
+
+Post as subentity vs Post as standalone entity
+I spend great time about thinking where post should be defined, what's the responsbility of such class, what does it represent and how to interact with it. Creating post in isolation was much easier and faster, as it wouldn't require any specific relations between entity (other than the database ones), however it wouldn't model the business as good as it could. Making post as a standalone entity, without any implicit rules defined of how to interact with it could cause a lot of inconsistencies in the future - while working on the application. Thus I focused on the business side, which made me creating post as a subentity (entity) in blog entity (aggregate), as both of these entities have strong relationship (not only in the database models). It also imposes the REST API naming convention (/blogs/:id/posts instead of /posts). I do believe that adding some more complex logic to represent the entities is acceptable, as in the long run it helps to avoid inconsistencies.
 
 ### Given more time, what improvements or optimizations would you want to add? When would you add them?
 
 I would definitely add below improvemnts or optimizations:
 
-Adding observability tools (logs, metrics, traces etc.), using application performance mangement tools. It would allow
-us to look into the details of some requests, analysing the latency of API calls, working with charts which would tell us
-different statistics about our application (e.g number of successfull calls, percentage of issues, some common patterns etc.). I would add it when my application would go to production, as observability tools are pretty expensive, and there's no great value added of them at the development stage.
+Adding observability tools (logs, metrics, traces etc.), using APM tools. It would allow us to look into the details of some requests, analysing the latency of API calls, working with charts which would tell us
+different statistics about our application (e.g number of successfull calls, distribution of issues, some common failure patterns etc.). I would start with adding the logs at the development stage, slowly introducing more specific tools while releasing the application to production, as observability tools are pretty expensive, and majority of its usage is at production environment.
 
-I would improve error handling, providing some exception filters, mapping the exceptions to appropriate HTTP responses,
-working with different HTTP status codes. This step could be done right now, when application is being developed.
+I would improve error handling by creating custom exceptions, providing some exception filters, mapping the exceptions to appropriate HTTP responses, working with different HTTP status codes. This step could be done right now, when application is being developed.
 
-Adding some security features like authentication, authorization, RBAC, rate limiters and throttling mechanisms, providing
-HTTPS connection (via SSL / TLS certificates). Such security features would improve the reliability of our application and would reduce the likelihood of some incident happening. This step is critical before application would go public, so it would be probably a time to introduce it.
+Adding some security features like authentication, authorization, RBAC, and throttling mechanisms, providing HTTPS connection (via SSL / TLS certificates). Such security features would improve the reliability of our application and would reduce the likelihood of some incident happening. This step is critical before application would go public, so it would be probably a time to introduce it.
 
 I would improve the API endpoints by providing the pagination of data, serializing API responses, versioning of API etc. This step could be done right now, during the development stage.
 
 I would definitely focus on writing different kind of tests (unit, integration, e2e, user acceptance tests or regression tests). I'm a big fan of TDD, thus I would definitely write such tests at the stage of development.
 
+I would refactor the code to use more maintainable and flexible design patterns (e.g different strategies for retriving the data - either retriving the full blog data with posts or without them), as application would grow such strategies could be used in different places, and could be defined in different flows (e.g authenticated users have access to all data, whereas non authenticated ones have access only to blog's data without posts).
+
 ### What would you need to do to make this application scale to hundreds of thousands of users?
 
 To make application more scalable I would:
 
-Introduce more scalable patterns like CQRS (instead of CRUD). It would allow me to scale write and read actions in
-isolation (e.g using different database engines, table indexes etc.). We could use master database to handle write requests and read replicas to handle read requests.
+Introduce more scalable patterns like CQRS (instead of CRUD). It would allow me to scale write and read actions in isolation (e.g using master database to handle write requests and read replicas to handle read requests, table indexes etc.).
 
-Introduce some in-memory caching for frequently accessed resources. We would avoid calling database every time the request
-is being triggered.
+Introduce some in-memory caching for frequently accessed resources. We would avoid calling database every time the request is being triggered.
 
-As the application does not need to maintain any state, it would be easy to scale it horizontally. We could create
-some configuration for microservice to scale automatically, based on the network traffic, CPU usage, memory usage etc.
-Such microservice instaces would be behind the load balancer, which would also allow for distributing the traffic in some
-optimized way.
+As the application does not need to maintain any state, it would be easy to scale it horizontally. We could create some configuration for microservice to scale automatically, based on the network traffic, CPU usage, memory usage etc. Such microservice instaces would be behind the load balancer, which would also allow for distributing the traffic in some optimized way.
 
-Instances could also be scaled vertically, by providing better resources (e.g CPU, memory, disk storage etc.), however
-vertical scaling has its own limitations, which is not the case for horizontal one.
+Instances could also be scaled vertically, by providing better resources (e.g CPU, memory, disk storage etc.), however vertical scaling has its own limitations, which is not the case for horizontal one.
 
-If the data would grow significantly, we could use database sharding, providing different instances for different
-regions etc. It would allow for spreading the load accross different geographical areas. We could also regulary archive
-the obsolate data to improve query performance and reduce storage usage and costs.
+If the data would grow significantly we could use database sharding, providing different instances for different regions etc. It would allow for spreading the load accross different geographical areas. We could also regulary archive the obsolate data to improve query performance and reduce storage usage and costs.
+
+We could introduce some asynchronous logic to handle certain requests (e.g while creating a blog we can wait until entity will be created in database and return result to the user, and we can queue the background tasks for sending the e-mail to all followers of the blog owner etc.)
 
 ### How would you change the architecture to allow for models that are stored in different databases? E.g. posts are stored in Cassandra and blogs are stored in Postgres.
 
-The persistance layer does not impact any another layer, thus there wouldn't be much changes in the application. We would need to create a repository which would handle couple of connections and perform some database opertions. We would need to
-use Unit Of Work pattern to work with the transactional data. This would ensure the consistency and integrity of our data. It would require some effort in the infrastructure layer, however it's still black-boxed for other kind of layers. (Application layer wouldn't even know that there are two databases)
+We could create two services which encapculates the logic for each entity on its own. Every service would have a connection to it's own database and the communication between them could be done either synchronously (via some API) or asynchronously via pub-sub mechanism. (Blog service could emit events to the post service to take appropriate actions). On top of two services, we could use some aggregation API Gateway, which would aggregate the results from both services (e.g fetching all blogs with their respective posts). We could ensure the data consistency using Saga pattern for distributed transactions.
+
+However for small applications, we could definitely stay with one microservice, which would connect to two databases.
 
 ### How would you deploy the Architecture you designed in a production ready way?
 
-I would use automated CI/CD pipelines (e.g GHA) to test and deploy my application to production. Such pipeline would be integrated with some external cloud provider (e.g AWS). We could use some IaC tool (e.g Terraform) to provide the configuration of services. I would use some containerized service like (Amazon ECS and Amazon ECR) to push new application image, tag and deploy it to ECS instance. AWS would allow us for rollbacking the application version, working with canary deployments, maintaining the application versions history.
+I would start with dockerazing my application, and running the CI/CD automated pipelines (e.g using GHA) to perform tests and deploy my application to production. I would use AWS as services provider (where the services configuration would be defined using some IaC tool e.g Terraform). Docker image would be uploaded to Amazon ECR and used in Amazon ECS instances with the latest tag defined. Amazon ECS could listen on certain events (e.g pushing the docker image to Amazon ECR) and run the deployment. Amazon ECS allows for version rollbacking, canary deployment and it maintaines the history of versions.
