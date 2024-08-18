@@ -14,7 +14,7 @@ export class BlogController {
   async getBlog(
     @Param() params: { id: string },
     @Query('return_posts') shouldReturnPosts: boolean,
-  ): Promise<CreateBlogResponse> {
+  ): Promise<GetBlogResponse> {
     const foundBlog = await this.blogService.getBlog(
       params.id,
       shouldReturnPosts,
@@ -56,7 +56,7 @@ export class BlogController {
   async createPostInBlog(
     @Param() params: { id: string },
     @Body() createPostRequest: CreatePostRequest,
-  ) {
+  ): Promise<CreatePostResponse> {
     const blog = await this.blogService.createPostInBlog(
       params.id,
       createPostRequest,

@@ -10,7 +10,7 @@ export class Blog extends BaseEntity {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ unique: true })
   slug: string;
 
   @OneToMany(() => Post, (post) => post.blog, { cascade: true })

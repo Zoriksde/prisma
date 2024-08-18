@@ -1,9 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { IBlogRepository } from '../../common/interfaces/blog/IBlogRepository';
 import { InjectBlogRepository } from '../../common/interfaces/blog/IBlogRepository';
-import { Blog } from '../../../domain/aggregates/Blog';
+import { Blog } from '../../../domain/aggregates/blog/Blog';
 import { CreateBlogData } from '../../../application/common/contracts/createBlogData';
-import { Post } from '../../../domain/aggregates/entities/Post';
+import { Post } from '../../../domain/aggregates/blog/entities/Post';
 import { CreatePostData } from '../../../application/common/contracts/createPostData';
 
 @Injectable()
@@ -24,14 +28,24 @@ export class BlogService {
       posts,
     );
 
-    return await this.blogRepository.createBlog(newBlog);
+    try {
+      return await this.blogRepository.createBlog(newBlog);
+    } catch (err: unknown) {
+      throw new InternalServerErrorException(
+        'Internal server error while creating blog',
+      );
+    }
   }
 
   async createPostInBlog(
     id: string,
     createPostData: CreatePostData,
   ): Promise<Blog> {
-    const foundBlog = await this.blogRepository.getBlog(id, true);
+    const foundBlog = await this.blogRepository.getBlog(id, true).catch(() => {
+      throw new InternalServerErrorException(
+        'Internal server error while fetching blog',
+      );
+    });
 
     if (!foundBlog) {
       throw new NotFoundException('Blog has not been found!');
@@ -45,11 +59,24 @@ export class BlogService {
     );
 
     foundBlog.addPost(newPost);
-    return await this.blogRepository.updateBlog(foundBlog);
+
+    try {
+      return await this.blogRepository.updateBlog(foundBlog);
+    } catch (err: unknown) {
+      throw new InternalServerErrorException(
+        'Internal server error while updating blog',
+      );
+    }
   }
 
   async getBlog(id: string, shouldReturnPosts: boolean): Promise<Blog> {
-    const blog = await this.blogRepository.getBlog(id, shouldReturnPosts);
+    const blog = await this.blogRepository
+      .getBlog(id, shouldReturnPosts)
+      .catch(() => {
+        throw new InternalServerErrorException(
+          'Internal server error while fetching blog',
+        );
+      });
 
     if (!blog) {
       throw new NotFoundException('Blog has not been found!');

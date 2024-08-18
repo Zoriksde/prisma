@@ -4,8 +4,8 @@ import { Blog as InfrastructureBlogConfiguration } from '../../configuration/Blo
 import { Post as InfrastructurePostConfiguration } from '../../configuration/Post';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
-import { Blog } from '../../../../domain/aggregates/Blog';
-import { Post } from '../../../../domain/aggregates/entities/Post';
+import { Blog } from '../../../../domain/aggregates/blog//Blog';
+import { Post } from '../../../../domain/aggregates/blog/entities/Post';
 
 @Injectable()
 export class PostgresBlogRepository implements IBlogRepository {

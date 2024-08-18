@@ -2,7 +2,6 @@ import { uuid } from 'uuidv4';
 
 export class Post {
   private readonly id: string;
-  private readonly viewCount: number = 0;
 
   static createPost(
     id: string,
@@ -16,10 +15,9 @@ export class Post {
   private constructor(
     private readonly _id: string,
     private readonly content: string,
-    private readonly _viewCount: number,
+    private readonly viewCount: number,
     private readonly title?: string,
   ) {
-    this.viewCount = _viewCount;
     this.id = _id ?? uuid();
   }
 

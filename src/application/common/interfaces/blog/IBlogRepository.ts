@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { Blog } from '../../../../domain/aggregates/Blog';
+import { Blog } from '../../../../domain/aggregates/blog/Blog';
 
 export const BlogRepositoryToken = 'BlogRepositoryToken';
 
