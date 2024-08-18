@@ -34,16 +34,20 @@ And finally I'm familar with such technologies :D
 Some of the trade-offs I was thiniking about:
 
 Simplicity vs Flexibility:
+
 Certain solutions are definitely simpler, but we're paying the cost of less flexibility. For example using TypeORM may speed up our development process, but it can limit flexibility of the application. For most of the use cases TypeORM fulfills the requirements, however in some specific cases it does not work so well. However due to nature of this application, I didn't want to perform software overengineering, thus I used TypeORM for this application, as it fulfills given requirements, and there's no need for additional flexibility in this area. 
 
 Maintainability vs Complexity:
+
 Highly maintainable code is easier to understand, but often it requires more complex patterns or concepts to use. In case of writing highly maintainable code the overall boilerplate is more complex. I was thinking about standard 3-layered application and clean architecture, and decided to implement it using clean architecture principles. This way I'm improving the code maintainability (I know it's a basic application, but thinking about different problems in the future - e.g changing the database etc. made me use clean architecture principles), with some acceptable complexity overage.
 
-DDD Modeling vs Standard Models
+DDD Modeling vs Standard Models:
+
 I was thinking about different approaches to model the business layer. Comparing the standard models (single class per each entity without sophisticated logic for mapping, data-centric classes with behavior declared in outer layers) to domain models (couple of classes per each entity, which potentially differs between layers, mapping layer between raw database entity and domain model, behavior-centric classes with its behavior defined).
 Although the standard approach is much simpler and does not require additional mapping layers and reduces the development effort, I've decided to model the business logic with DDD approach. This way I'm implicitly fulfilling the potential business requirements (e.g making sure that post is an entity in blog aggregate only - there shouldn't be a post without any blog linked). Although DDD imposes more development effort and defines rules to follow, it helps to model the business logic more precisely. I do realize that application is small enough, that these changes probably won't matter, but as all applications start with some basic logic and then they grow to huge sizes, sometimes it's worth to spend more time on it.
 
-Post as subentity vs Post as standalone entity
+Post as subentity vs Post as standalone entity:
+
 I spend great time about thinking where post should be defined, what's the responsbility of such class, what does it represent and how to interact with it. Creating post in isolation was much easier and faster, as it wouldn't require any specific relations between entity (other than the database ones), however it wouldn't model the business as good as it could. Making post as a standalone entity, without any implicit rules defined of how to interact with it could cause a lot of inconsistencies in the future - while working on the application. Thus I focused on the business side, which made me creating post as a subentity (entity) in blog entity (aggregate), as both of these entities have strong relationship (not only in the database models). It also imposes the REST API naming convention (/blogs/:id/posts instead of /posts). I do believe that adding some more complex logic to represent the entities is acceptable, as in the long run it helps to avoid inconsistencies.
 
 ### Given more time, what improvements or optimizations would you want to add? When would you add them?
